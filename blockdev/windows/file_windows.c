@@ -38,7 +38,7 @@
 #include <winioctl.h>
 
 /**@brief   Default filename.*/
-static const char *fname = "ext2";
+static const char *fname = "ExtFs.img";
 
 /**@brief   IO block size.*/
 #define EXT4_IORAW_BSIZE 512
@@ -68,13 +68,14 @@ static int file_open(struct ext4_blockdev *bdev)
 	DWORD junk;
 
 	sprintf(path, "\\\\.\\%s", fname);
-
+	printf("%s\n",path);
 	dev_file =
 	    CreateFile(path, GENERIC_READ | GENERIC_WRITE,
 		       FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, OPEN_EXISTING,
 		       FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH, NULL);
 
 	if (dev_file == INVALID_HANDLE_VALUE) {
+		printf("open failed\n");
 		return EIO;
 	}
 

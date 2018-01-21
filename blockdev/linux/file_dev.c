@@ -37,10 +37,10 @@
 #include <string.h>
 
 /**@brief   Default filename.*/
-static const char *fname = "ext2";
+static const char *fname = "ExtFs.img";
 
 /**@brief   Image block size.*/
-#define EXT4_FILEDEV_BSIZE 512
+#define EXT4_FILEDEV_BSIZE 4096
 
 /**@brief   Image file descriptor.*/
 static FILE *dev_file;

@@ -153,7 +153,7 @@ uint32_t ext4_dmask_get(void);
 				printf("l: %d   ", __LINE__);                  \
 			}                                                      \
 			printf(__VA_ARGS__);                                   \
-			fflush(stdout);                                        \
+/*fflush(stdout);*/ \
 		}                                                              \
 	} while (0)
 #else
