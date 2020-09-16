@@ -1,4 +1,5 @@
 from building import *
+import rtconfig
 
 cwd = GetCurrentDir()
 
@@ -13,9 +14,16 @@ CPPPATH += ['%s/blockdev/rtthread'%(cwd)]
 CPPDEFINES = ['CONFIG_USE_DEFAULT_CFG']
 CPPDEFINES+=['CONFIG_HAVE_OWN_OFLAGS=0']
 
+LOCAL_CCFLAGS = ''
+
+if rtconfig.CROSS_TOOL == 'gcc':
+    LOCAL_CCFLAGS += ' -std=gnu99'
+
+
 group = DefineGroup('Filesystem', objs, 
             depend = ['RT_USING_DFS', 'RT_USING_DFS_LWEXT4'],
             CPPPATH = CPPPATH,
-            CPPDEFINES = CPPDEFINES)
+            CPPDEFINES = CPPDEFINES,
+            LOCAL_CCFLAGS = LOCAL_CCFLAGS)
 
 Return('group')
