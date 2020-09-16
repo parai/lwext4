@@ -116,9 +116,9 @@ int ext4_mbr_scan(struct ext4_blockdev *parent, struct ext4_mbr_bdevs *bdevs)
 
 		bdevs->partitions[i].bdif = parent->bdif;
 		bdevs->partitions[i].part_offset =
-			(uint64_t)pe->first_lba * parent->bdif->ph_bsize;
+			(uint64_t)pe->first_lba * 512;
 		bdevs->partitions[i].part_size =
-			(uint64_t)pe->sectors * parent->bdif->ph_bsize;
+			(uint64_t)pe->sectors * 512;
 	}
 
 	blockdev_fini:
