@@ -133,7 +133,6 @@ static int dfs_ext_mount(struct dfs_filesystem* fs, unsigned long rwflag, const 
         return -ENOENT;
     }
 
-    rt_kprintf("dfs_ext_mount: mount partid:%d ,the partid max is 3.\n", partid);
     if(partid >= 0 && partid <= 3)
     {
         ext4_blkdev_list[index]->part_offset = ((struct blk_device *)fs->dev_id)->ext4_partition.partitions[partid].part_offset;
@@ -141,6 +140,7 @@ static int dfs_ext_mount(struct dfs_filesystem* fs, unsigned long rwflag, const 
     }
     else
     {
+        rt_kprintf("dfs_ext_mount: mount partid:%d ,the partid max is 3.\n", partid);
         ext4_blkdev_list[index]->part_offset = -1;
     }
 
