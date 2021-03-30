@@ -1,7 +1,7 @@
 /*
  * File      : dfs_ext.c
  * This file is part of Device File System in RT-Thread RTOS
- * COPYRIGHT (C) 2004-2017, RT-Thread Development Team
+ * COPYRIGHT (C) 2004-2021, RT-Thread Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -127,9 +127,9 @@ static int dfs_ext_mount(struct dfs_filesystem* fs, unsigned long rwflag, const 
 
     /* get an empty position */
     index = get_disk(RT_NULL);
-    if (index == -1) 
+    if (index == -1)
     {
-		rt_kprintf("dfs_ext_mount: get an empty position.\n");
+        rt_kprintf("dfs_ext_mount: get an empty position.\n");
         return -ENOENT;
     }
 
@@ -494,7 +494,7 @@ static int blockdev_open(struct ext4_blockdev *bdev)
             bdev->part_offset = 0;
             bdev->part_size = geometry.sector_count*geometry.bytes_per_sector;
         }
-        
+
         disk_sector_size[index] = geometry.bytes_per_sector;
         bdev->bdif->ph_bcnt = bdev->part_size / bdev->bdif->ph_bsize;
     }

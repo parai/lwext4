@@ -1,7 +1,7 @@
 /*
  * File      : dfs_ext.h
  * This file is part of Device File System in RT-Thread RTOS
- * COPYRIGHT (C) 2004-2017, RT-Thread Development Team
+ * COPYRIGHT (C) 2004-2021, RT-Thread Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
