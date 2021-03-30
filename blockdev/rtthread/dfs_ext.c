@@ -21,12 +21,16 @@
  * Date           Author            Notes
  * 2017-11-11     parai@foxmail.com base porting
  * 2018-06-02     parai@foxmail.com fix mkfs issues
+ * 2020-08-19     lizhirui          porting to ls2k
  */
 
 #include <rtthread.h>
+#include <rtdef.h>
 #include <dfs.h>
 #include <dfs_fs.h>
 #include <dfs_file.h>
+
+#include <blk_device.h>
 
 #include "dfs_ext.h"
 
@@ -35,6 +39,7 @@
 #include "ext4_config.h"
 #include "ext4_blockdev.h"
 #include "ext4_errno.h"
+#include "ext4_mbr.h"
 
 static int blockdev_open(struct ext4_blockdev *bdev);
 static int blockdev_bread(struct ext4_blockdev *bdev, void *buf, uint64_t blk_id,
@@ -116,20 +121,35 @@ static int dfs_ext_mount(struct dfs_filesystem* fs, unsigned long rwflag, const 
 {
     int rc;
     int index;
+    long partid = (long)data;
     char* mp = fs->path; /*mount point */
     char* img = fs->dev_id->parent.name;
 
     /* get an empty position */
     index = get_disk(RT_NULL);
-    if (index == -1)
+    if (index == -1) 
+    {
+		rt_kprintf("dfs_ext_mount: get an empty position.\n");
         return -ENOENT;
+    }
+
+    if(partid >= 0 && partid <= 3)
+    {
+        ext4_blkdev_list[index]->part_offset = ((struct blk_device *)fs->dev_id)->ext4_partition.partitions[partid].part_offset;
+        ext4_blkdev_list[index]->part_size = ((struct blk_device *)fs->dev_id)->ext4_partition.partitions[partid].part_size;
+    }
+    else
+    {
+        rt_kprintf("dfs_ext_mount: mount partid:%d ,the partid max is 3.\n", partid);
+        ext4_blkdev_list[index]->part_offset = -1;
+    }
 
     rc = ext4_device_register(ext4_blkdev_list[index], img);
     if(EOK == rc)
     {
         disk[index] = fs->dev_id;
 
-        rc = ext4_mount(img, "/", false);
+        rc = ext4_mount(img, fs->path, false);
 
         if(EOK != rc)
         {
@@ -458,12 +478,24 @@ static int blockdev_open(struct ext4_blockdev *bdev)
     RT_ASSERT(index < RT_DFS_EXT_DRIVES);
     RT_ASSERT(device);
 
+    r = rt_device_open(device,RT_DEVICE_OFLAG_RDWR);
+
+    if(r != RT_EOK)
+    {
+        return r;
+    }
+
+
     r = rt_device_control(device, RT_DEVICE_CTRL_BLK_GETGEOME, &geometry);
     if(RT_EOK == r)
     {
-        bdev->part_offset = 0;
+        if(bdev->part_offset == -1)
+        {
+            bdev->part_offset = 0;
+            bdev->part_size = geometry.sector_count*geometry.bytes_per_sector;
+        }
+        
         disk_sector_size[index] = geometry.bytes_per_sector;
-        bdev->part_size = geometry.sector_count*geometry.bytes_per_sector;
         bdev->bdif->ph_bcnt = bdev->part_size / bdev->bdif->ph_bsize;
     }
 
@@ -477,7 +509,7 @@ static int blockdev_bread(struct ext4_blockdev *bdev, void *buf, uint64_t blk_id
     int result;
     int index = get_bdev(bdev);
     rt_device_t device = disk[index];
-
+    struct blk_device *blk = (struct blk_device *)device;
     RT_ASSERT(index < RT_DFS_EXT_DRIVES);
     RT_ASSERT(device);
 
