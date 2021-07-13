@@ -267,10 +267,10 @@ static int dfs_ext_close(struct dfs_fd* file)
 {
     int r;
 
-#ifdef LWEXT4_RUN_RT_SMART
+#ifdef RT_USING_SMART
     if (file->fnode->type == FT_DIRECTORY)
 #endif
-#ifdef LWEXT4_RUN_RT_THREAD
+#ifdef RT_USING_THREAD
     if (file->type == FT_DIRECTORY)
 #endif
     {
@@ -298,20 +298,20 @@ static int dfs_ext_open(struct dfs_fd* file)
     {
         if (file->flags & O_CREAT)
         {
-#ifdef LWEXT4_RUN_RT_SMART
+#ifdef RT_USING_SMART
             r = ext4_dir_mk(file->fnode->path);
 #endif
-#ifdef LWEXT4_RUN_RT_THREAD
+#ifdef RT_USING_THREAD
             r = ext4_dir_mk(file->path);
 #endif
         }
         if(EOK == r)
         {
             dir = rt_malloc(sizeof(ext4_dir));
-#ifdef LWEXT4_RUN_RT_SMART
+#ifdef RT_USING_SMART
             r = ext4_dir_open(dir, file->fnode->path);
 #endif
-#ifdef LWEXT4_RUN_RT_THREAD
+#ifdef RT_USING_THREAD
             r = ext4_dir_open(dir, file->path);
 #endif
             if(EOK == r)
@@ -327,10 +327,10 @@ static int dfs_ext_open(struct dfs_fd* file)
     else
     {
         f = rt_malloc(sizeof(ext4_file));
-#ifdef LWEXT4_RUN_RT_SMART
+#ifdef RT_USING_SMART
         r = ext4_fopen2(f, file->fnode->path, file->flags);
 #endif
-#ifdef LWEXT4_RUN_RT_THREAD
+#ifdef RT_USING_THREAD
         r = ext4_fopen2(f, file->path, file->flags);
 #endif
 
